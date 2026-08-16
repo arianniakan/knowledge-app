@@ -97,7 +97,9 @@ async function extractYoutubeText(url: string) {
       error instanceof YoutubeTranscriptNotAvailableError ||
       error instanceof YoutubeTranscriptNotAvailableLanguageError
     ) {
-      throw new Error("This video doesn't have captions available, so a transcript can't be extracted.");
+      throw new Error(
+        "Couldn't find captions for this video. It may not have any, or YouTube may be briefly blocking automated requests — try again in a bit or a different video.",
+      );
     }
     if (error instanceof YoutubeTranscriptVideoUnavailableError) {
       throw new Error("That YouTube video is unavailable or private.");
