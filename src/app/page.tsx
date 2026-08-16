@@ -794,7 +794,7 @@ export default function Home() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-72 shrink-0 flex-col overflow-y-auto border-r border-border bg-muted/30 p-4 transition-transform duration-200 ease-in-out md:static md:z-auto md:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 flex w-72 shrink-0 flex-col overflow-y-auto border-r border-border bg-sidebar p-4 transition-transform duration-200 ease-in-out md:static md:z-auto md:translate-x-0",
           isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
