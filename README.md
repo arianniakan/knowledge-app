@@ -2,7 +2,7 @@
 
 A retrieval-augmented chat app: add PDFs, websites, or YouTube videos as knowledge sources, then ask questions and get answers grounded in that content — with reranked retrieval, inline citations, per-user knowledge bases, and an automated eval harness.
 
-**[Live demo →](#)** _(link added after deployment)_
+**[Live demo →](https://knowledge-app-vert.vercel.app)**
 
 ## Why I built this
 
