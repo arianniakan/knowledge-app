@@ -1,3 +1,5 @@
+import "@/lib/pdf-polyfills";
+
 import * as cheerio from "cheerio";
 import OpenAI from "openai";
 import {
