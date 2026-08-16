@@ -6,6 +6,10 @@ import { userNamespace } from "@/lib/namespace";
 import { attachSource } from "@/lib/projects";
 import { ingestRateLimiter } from "@/lib/ratelimit";
 
+// Ingesting a full page (chunking + one embedding call per chunk) can take
+// longer than the platform's default timeout for larger sources.
+export const maxDuration = 60;
+
 export async function POST(req: Request) {
   const session = await auth();
 

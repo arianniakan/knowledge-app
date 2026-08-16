@@ -58,6 +58,9 @@ const markdownComponents: Components = {
 const GUEST_CHAT_STORAGE_KEY = "knowledge-app:guest-chat";
 const GUEST_TIP_STORAGE_KEY = "knowledge-app:seen-guest-tip";
 const COACHMARK_AUTO_DISMISS_MS = 9000;
+// Vercel serverless functions reject request bodies over 4.5MB before our code
+// even runs, so check client-side first for a fast, friendly error.
+const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
 
 type ChatSummary = {
   id: string;
@@ -219,6 +222,31 @@ async function extractApiError(response: Response, fallback: string): Promise<st
   }
 
   return fallback;
+}
+
+// Ingest responses can come from the platform itself (payload-too-large, function
+// timeout) rather than our own route handler, so the body isn't guaranteed to be JSON.
+async function extractIngestError(response: Response): Promise<string> {
+  const text = await response.text();
+
+  try {
+    const data = JSON.parse(text);
+    if (data && typeof data.error === "string") {
+      return data.error;
+    }
+  } catch {
+    // Not JSON — fall through to status-based messages below.
+  }
+
+  if (response.status === 413) {
+    return "That file is too large to upload. Try a file under 4MB.";
+  }
+
+  if (response.status === 504 || /timeout/i.test(text)) {
+    return "This source took too long to process. Try a shorter document or a smaller website.";
+  }
+
+  return "Failed to ingest source.";
 }
 
 function getChatErrorMessage(error: Error): string {
@@ -466,11 +494,11 @@ export default function Home() {
         body: formData,
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.error || "Failed to ingest source.");
+        throw new Error(await extractIngestError(response));
       }
+
+      const data = await response.json();
 
       setSources((prev) => [
         ...prev,
@@ -531,6 +559,12 @@ export default function Home() {
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setIngestError("That file is too large to upload. Try a file under 4MB.");
+      event.target.value = "";
+      return;
+    }
 
     const formData = new FormData();
     formData.append("file", file);
