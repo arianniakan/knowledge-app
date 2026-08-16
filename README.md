@@ -89,6 +89,7 @@ Next.js (App Router) · React · TypeScript · Tailwind CSS · shadcn/ui · Verc
    | `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | [console.upstash.com](https://console.upstash.com) — Regional Redis database, REST API section |
    | `AUTH_SECRET` | Any random string, e.g. `openssl rand -base64 33` |
    | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | [github.com/settings/developers](https://github.com/settings/developers) → New OAuth App. Callback URL: `http://localhost:3000/api/auth/callback/github` |
+   | `CRON_SECRET` | Any random string, e.g. `openssl rand -hex 32` — authenticates the scheduled inactive-user cleanup job |
 
 3. In Pinecone, create an index named `knowledge-app` with:
    - Dimension: `1536` (matches `text-embedding-3-small`)

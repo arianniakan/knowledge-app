@@ -58,6 +58,10 @@ Auth.js v5 (beta) with the GitHub provider, JWT session strategy, no database �
 
 `src/lib/ratelimit.ts` — sliding-window limits via `@upstash/ratelimit` on the same Redis instance used for everything else. Anonymous chat traffic is limited more tightly than signed-in traffic; ingestion is signed-in-only and limited per user.
 
+### Inactive-user data retention
+
+Signed-in users' sources/projects/chats have no per-item TTL (unlike chats' own 7-day TTL, this is *account-level*) — instead, `src/lib/namespace.ts::resolveNamespace()` touches a last-active timestamp (`src/lib/user-activity.ts::touchUserActivity()`) and adds the namespace to a `knowledge-app:known-users` set on every call. A Vercel Cron job (`vercel.json`, daily) hits `GET /api/cron/cleanup-inactive-users`, which wipes any namespace untouched for 7+ days — Pinecone vectors (`deleteAll()` on that namespace), the sources/projects Redis hashes, and every project's chats — then drops it from the known-users set. Guarded by a `CRON_SECRET` bearer-token check (Vercel sets this header automatically on scheduled invocations) and an explicit skip of `DEMO_NAMESPACE`, which should never be in the known-users set in the first place since it's never sign-in-tracked.
+
 ## Known limitations (don't re-litigate these — they're accepted trade-offs)
 
 - Server-side `fetch` can't ingest sites behind bot protection (e.g. Cloudflare-fronted wikis) — a real fix needs a headless browser, out of scope.
@@ -67,4 +71,4 @@ Auth.js v5 (beta) with the GitHub provider, JWT session strategy, no database �
 
 ## Environment variables
 
-`OPENAI_API_KEY`, `PINECONE_API_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `AUTH_SECRET`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET` — see `README.md` for where to get each and full local setup steps. The Pinecone index must be named `knowledge-app`, dimension `1536`, metric `cosine`.
+`OPENAI_API_KEY`, `PINECONE_API_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `AUTH_SECRET`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`, `CRON_SECRET` — see `README.md` for where to get each and full local setup steps. The Pinecone index must be named `knowledge-app`, dimension `1536`, metric `cosine`.

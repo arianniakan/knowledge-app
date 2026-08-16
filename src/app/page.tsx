@@ -878,6 +878,12 @@ export default function Home() {
             </button>
           )}
 
+          {!isDemo && (
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              Your data is removed after 7 days of inactivity.
+            </p>
+          )}
+
           {isDemo && (
             <Coachmark show={showGuestTip} onDismiss={dismissGuestTip}>
               Chat with the demo sources below, or sign in with GitHub to upload your own and unlock full
