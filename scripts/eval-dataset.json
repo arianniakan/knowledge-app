@@ -1,0 +1,32 @@
+[
+  {
+    "question": "What does the acronym RAG stand for?",
+    "expectedSource": "https://en.wikipedia.org/wiki/Retrieval-augmented_generation",
+    "expectedAnswer": "RAG stands for Retrieval-Augmented Generation."
+  },
+  {
+    "question": "How does RAG help reduce hallucinations in language models?",
+    "expectedSource": "https://en.wikipedia.org/wiki/Retrieval-augmented_generation",
+    "expectedAnswer": "RAG grounds the model's answer in retrieved external documents or facts instead of relying only on the model's internal parametric memory, which reduces fabricated or incorrect responses."
+  },
+  {
+    "question": "What is a vector database primarily used for?",
+    "expectedSource": "https://en.wikipedia.org/wiki/Vector_database",
+    "expectedAnswer": "A vector database stores and indexes high-dimensional vector embeddings so that similar items can be found via nearest-neighbor / similarity search."
+  },
+  {
+    "question": "What algorithm is commonly used for approximate nearest neighbor search in vector databases?",
+    "expectedSource": "https://en.wikipedia.org/wiki/Vector_database",
+    "expectedAnswer": "HNSW (Hierarchical Navigable Small World) is a commonly used approximate nearest neighbor search algorithm."
+  },
+  {
+    "question": "What is prompt engineering?",
+    "expectedSource": "https://en.wikipedia.org/wiki/Prompt_engineering",
+    "expectedAnswer": "Prompt engineering is the process of structuring or crafting instructions (prompts) so that an AI model, especially a large language model, produces the desired output."
+  },
+  {
+    "question": "What is few-shot prompting?",
+    "expectedSource": "https://en.wikipedia.org/wiki/Prompt_engineering",
+    "expectedAnswer": "Few-shot prompting is a technique where a few examples of the desired input/output are included in the prompt to guide the model's response."
+  }
+]
