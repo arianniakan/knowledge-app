@@ -11,6 +11,7 @@ import {
   Globe,
   LogIn,
   LogOut,
+  Menu,
   MessageSquare,
   Plus,
   RotateCcw,
@@ -24,6 +25,7 @@ import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -308,6 +310,7 @@ export default function Home() {
   const [ingestError, setIngestError] = useState<string | null>(null);
   const [showGuestTip, setShowGuestTip] = useState(false);
   const [showProjectTip, setShowProjectTip] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isBusy = status === "submitted" || status === "streaming";
@@ -580,6 +583,7 @@ export default function Home() {
   };
 
   const openProject = async (projectId: string) => {
+    setIsMobileSidebarOpen(false);
     setCurrentProjectId(projectId);
     setChatHistory([]);
     setMessages(initialMessages);
@@ -719,6 +723,7 @@ export default function Home() {
 
   const startNewChat = () => {
     if (!currentProjectId) return;
+    setIsMobileSidebarOpen(false);
     const newId = crypto.randomUUID();
     setCurrentChatId(newId);
     setMessages(initialMessages);
@@ -727,6 +732,7 @@ export default function Home() {
 
   const openChat = async (chatId: string) => {
     if (!currentProjectId) return;
+    setIsMobileSidebarOpen(false);
 
     try {
       const response = await fetch(`/api/projects/${currentProjectId}/chats/${chatId}`);
@@ -776,11 +782,35 @@ export default function Home() {
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background text-foreground">
+      {/* Mobile sidebar backdrop */}
+      {isMobileSidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 md:hidden"
+          onClick={() => setIsMobileSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="flex w-72 shrink-0 flex-col overflow-y-auto border-r border-border bg-muted/30 p-4">
-        <h2 className="mb-4 text-sm font-semibold tracking-wide text-foreground uppercase">
-          Knowledge Sources
-        </h2>
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 flex w-72 shrink-0 flex-col overflow-y-auto border-r border-border bg-muted/30 p-4 transition-transform duration-200 ease-in-out md:static md:z-auto md:translate-x-0",
+          isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full",
+        )}
+      >
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-sm font-semibold tracking-wide text-foreground uppercase">
+            Knowledge Sources
+          </h2>
+          <button
+            type="button"
+            onClick={() => setIsMobileSidebarOpen(false)}
+            className="text-muted-foreground hover:text-foreground md:hidden"
+            aria-label="Close sidebar"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
 
         <div className="relative mb-4 flex items-center justify-between gap-2 rounded-md border border-border bg-background px-3 py-2">
           {sessionStatus === "authenticated" && session?.user ? (
@@ -1212,8 +1242,18 @@ export default function Home() {
 
       {/* Main chat area */}
       <main className="flex min-h-0 flex-1 flex-col">
-        <header className="flex items-center justify-between border-b border-border px-6 py-4">
-          <h1 className="text-lg font-semibold">Chat</h1>
+        <header className="flex items-center justify-between border-b border-border px-4 py-4 md:px-6">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsMobileSidebarOpen(true)}
+              className="text-muted-foreground hover:text-foreground md:hidden"
+              aria-label="Open sidebar"
+            >
+              <Menu className="size-5" />
+            </button>
+            <h1 className="text-lg font-semibold">Chat</h1>
+          </div>
           <div className="flex items-center gap-3">
             {isDemo && (
               <button
